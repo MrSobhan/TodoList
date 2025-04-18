@@ -10,19 +10,19 @@ import { CiCircleList } from "react-icons/ci"
 import { BsListCheck } from "react-icons/bs"
 
 export default function App() {
-  
   const [projects, setProjects] = useState([])
   const [selectedProject, setSelectedProject] = useState(null)
+  const [newProject, setNewProject] = useState("")
+  const [editingProjectId, setEditingProjectId] = useState(null)
+  const [editingProjectName, setEditingProjectName] = useState("")
 
   const baseUrl = "http://localhost:5000/api"
 
-  
   const [tasks, setTasks] = useState([])
   const [newTask, setNewTask] = useState("")
   const [editingId, setEditingId] = useState(null)
   const [editingText, setEditingText] = useState("")
 
-  // گرفتن پروژه‌ها از بک‌اند
   const fetchProjects = async () => {
     try {
       const res = await axios.get(`${baseUrl}/projects`)
@@ -32,7 +32,6 @@ export default function App() {
     }
   }
 
-  // گرفتن تسک‌ها از بک‌اند (با فیلتر projectId)
   const fetchTasks = async (projectId) => {
     if (!projectId) return
     try {
@@ -53,7 +52,48 @@ export default function App() {
     }
   }, [selectedProject])
 
-  // عملیات CRUD تسک
+  const addProject = async () => {
+    if (newProject.trim() === "") return
+    try {
+      await axios.post(`${baseUrl}/projects`, { name: newProject })
+      setNewProject("")
+      fetchProjects()
+    } catch (err) {
+      console.error('Error adding project', err)
+    }
+  }
+
+  const deleteProject = async (id) => {
+    try {
+      await axios.delete(`${baseUrl}/projects/${id}`)
+      if (selectedProject === id) setSelectedProject(null)
+      fetchProjects()
+    } catch (err) {
+      console.error('Error deleting project', err)
+    }
+  }
+
+  const startEditingProject = (proj) => {
+    setEditingProjectId(proj._id)
+    setEditingProjectName(proj.name)
+  }
+
+  const cancelEditingProject = () => {
+    setEditingProjectId(null)
+    setEditingProjectName("")
+  }
+
+  const updateProject = async (id) => {
+    if (editingProjectName.trim() === "") return
+    try {
+      await axios.put(`${baseUrl}/projects/${id}`, { name: editingProjectName })
+      cancelEditingProject()
+      fetchProjects()
+    } catch (err) {
+      console.error('Error updating project', err)
+    }
+  }
+
   const addTask = async () => {
     if (newTask.trim() === "" || !selectedProject) return
     try {
@@ -79,7 +119,7 @@ export default function App() {
   }
 
   const startEditing = (task) => {
-    setEditingId(task.id)
+    setEditingId(task._id)
     setEditingText(task.title)
   }
 
@@ -113,20 +153,53 @@ export default function App() {
     <div className="max-w-md mx-auto mt-16 px-4">
       {!selectedProject ? (
         <>
-          <h1 className="text-2xl font-bold text-center mb-8 moraba">لیست پروژه‌ها <CiCircleList className='inline'/></h1>
+          <h1 className="text-2xl font-bold text-center mb-8 moraba">لیست پروژه‌ها <CiCircleList className='inline' /></h1>
+
+          <div className="flex gap-2 mb-4">
+            <Input
+              type="text"
+              value={newProject}
+              onChange={(e) => setNewProject(e.target.value)}
+              placeholder="پروژه جدید را وارد کنید..."
+              className="flex-grow"
+            />
+            <Button onClick={addProject}><IoMdAddCircle /></Button>
+          </div>
+
           <div className="space-y-3">
             {projects.map(proj => (
-              <Card key={proj._id} className="p-4 cursor-pointer" onClick={() => setSelectedProject(proj._id)}>
-                <h2 className="font-semibold">{proj.name}</h2>
-                {proj.description && <p className="text-sm text-muted-foreground">{proj.description}</p>}
+              <Card key={proj._id} className="p-4 flex justify-between items-center">
+                <div className="cursor-pointer flex-grow">
+                  {editingProjectId === proj._id ? (
+                    <Input value={editingProjectName} onChange={(e) => setEditingProjectName(e.target.value)} />
+                  ) : (
+                    <h2 className="font-semibold">{proj.name}</h2>
+                  )}
+                </div>
+                <div className="flex gap-2">
+                  {editingProjectId === proj._id ? (
+                    <>
+                      <Button size="sm" onClick={() => updateProject(proj._id)}>ثبت</Button>
+                      <Button size="sm" variant="secondary" onClick={cancelEditingProject}>لغو</Button>
+                    </>
+                  ) : (
+                    <>
+                      <Button size="sm" onClick={() => setSelectedProject(proj._id)}>مشاهده</Button>
+                      <Button size="sm" onClick={() => startEditingProject(proj)}><MdModeEditOutline /></Button>
+                      <Button size="sm" variant="destructive" onClick={() => deleteProject(proj._id)}><MdDelete /></Button>
+                    </>
+                  )}
+                </div>
               </Card>
             ))}
           </div>
+
+          <p className='my-20 text-center'>ساخته شده با ❤️ توسط سبحان</p>
         </>
       ) : (
         <>
           <Button variant="link" onClick={() => setSelectedProject(null)}>⬅ بازگشت به پروژه‌ها</Button>
-          <h1 className="text-2xl font-bold text-center mb-6 moraba">تسک‌های پروژه <BsListCheck className='inline'/></h1>
+          <h1 className="text-2xl font-bold text-center mb-6 moraba">تسک‌های پروژه <BsListCheck className='inline' /></h1>
 
           <div className="flex gap-2 mb-4">
             <Input
@@ -179,6 +252,8 @@ export default function App() {
               </Card>
             ))}
           </div>
+
+          <p className='my-20 text-center'>ساخته شده با ❤️ توسط سبحان</p>
         </>
       )}
     </div>
