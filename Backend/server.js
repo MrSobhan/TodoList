@@ -9,11 +9,13 @@ const taskRoutes    = require('./routes/tasks');
 
 const app = express();
 
+// * mongodb://0.0.0.0:27017/todolist
+
 
 app.use(cors());
 app.use(express.json());
 
-// روت‌ها
+
 app.use('/api/projects', projectRoutes);
 app.use('/api/tasks',    taskRoutes);
 

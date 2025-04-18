@@ -16,7 +16,7 @@ export default function App() {
   const [editingProjectId, setEditingProjectId] = useState(null)
   const [editingProjectName, setEditingProjectName] = useState("")
 
-  const baseUrl = "http://localhost:5000/api"
+  const baseUrl = "https://backend-todolist-mu2e.onrender.com/api"
 
   const [tasks, setTasks] = useState([])
   const [newTask, setNewTask] = useState("")
