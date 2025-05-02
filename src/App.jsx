@@ -308,7 +308,7 @@ export default function App() {
             </div>
 
 
-            <div className="h-[500px] w-[500px] blur-[40px] rounded-full bg-gradient-to-t from-purple-300 to-transparent absolute -right-28 -bottom-28" />
+            <div className="hidden md:block h-[500px] w-[500px] blur-[40px] rounded-full bg-gradient-to-t from-purple-300 to-transparent absolute -right-28 -bottom-28" />
           </div>
         )
       }
