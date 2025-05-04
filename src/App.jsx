@@ -161,7 +161,7 @@ export default function App() {
                               className="bg-gray-50 dark:bg-gray-700"
                             />
                           ) : (
-                            <h2 className="font-semibold">{proj.name}</h2>
+                            <h2 className="font-semibold cursor-pointer" onClick={() => setSelectedProject(proj._id)}>{proj.name}</h2>
                           )}
                         </div>
                         <div className="flex gap-2">
@@ -180,17 +180,18 @@ export default function App() {
                             </>
                           ) : (
                             <>
-                              <Button
+                              {/* <Button
                                 size="sm"
                                 variant="outline"
                                 onClick={() => setSelectedProject(proj._id)}
                               >
                                 <TbSubtask size={20} />
-                              </Button>
+                              </Button> */}
                               <Button
                                 size="sm"
                                 variant="ghost"
                                 onClick={() => startEditingProject(proj)}
+                                className="border border-solid border-gray-50"
                               >
                                 <AiOutlineEdit size={20} />
                               </Button>
@@ -287,6 +288,7 @@ export default function App() {
                                 size="sm"
                                 variant="ghost"
                                 onClick={() => startEditing(task)}
+                                className="border border-solid border-gray-50"
                               >
                                 <AiOutlineEdit size={20} />
                               </Button>
